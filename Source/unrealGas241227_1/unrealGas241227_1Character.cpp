@@ -84,6 +84,8 @@ void AunrealGas241227_1Character::BeginPlay()
 			//델리게이트로 HP 변경시 원하는 함수 호출 가능하도록
 			const_cast<UMyAttributeSet*>(AttributeSetVar)->HealthChaneDelegate.AddDynamic(this,&AunrealGas241227_1Character::OnHealthChangeNative);
 
+			InitializeAttribute();
+			AddStartupEffects();
 		}
 	}
 	else
@@ -173,6 +175,49 @@ void AunrealGas241227_1Character::OnRep_PlayerState()
 	}
 }
 
+void AunrealGas241227_1Character::InitializeAttribute()
+{
+	if (IsValid(AbilitySystemComponent))
+		return;
+	if (IsValid(DefaultAttributes))
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s()Missing DefaultAttributes."), *FString(__FUNCTION__));// 호출한 함수 이름으로 에러 메시지 출력
+		return;
+	}
+
+	//이펙트 행들 생성
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);// 어떤 놈에게 적용할지
+
+	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 0, EffectContext);
+
+	if (NewHandle.IsValid())
+	{
+		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+	}
+
+}
+
+void AunrealGas241227_1Character::AddStartupEffects()
+{
+	if (IsValid(AbilitySystemComponent) || GetLocalRole() != ROLE_Authority || AbilitySystemComponent->StartUpEffectApplied)
+		return;
+	
+	//이펙트 행들 생성
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);// 어떤 놈에게 적용할지
+
+	for (TSubclassOf<class UGameplyEffect> GameplayEffect : StartUpEffects)
+	{
+		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 0, EffectContext);
+		if (NewHandle.IsValid())
+		{
+			AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+		}
+	}
+	AbilitySystemComponent->StartUpEffectApplied = true;
+}
+
 
 void AunrealGas241227_1Character::InitalizeAbility(
 	TSubclassOf<class UGameplayAbility> AbilityToGet, int32 AbilityLevel)
@@ -253,7 +298,10 @@ void AunrealGas241227_1Character::HealthValues(float& Health, float& MaxHealth)
 
 float AunrealGas241227_1Character::GetHealth() const
 {
-	return AttributeSetVar->GetHealth();
+	if (IsValid(AttributeSetVar))
+		return AttributeSetVar->GetHealth();
+	else
+		return 0.f;
 } 
 
 float AunrealGas241227_1Character::GetMaxHealth() const

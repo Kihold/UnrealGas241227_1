@@ -74,11 +74,17 @@ public: //내꺼 추가
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASGamePlayAbility")
 	TSubclassOf<class UGameplayEffect> DefaultAttributes;
 
+	//기본 체력회복, 마력회복 등
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASGamePlayAbility")
+	TArray<TSubclassOf<class UGameplayEffect>> StartUpEffects; 
 
 	//플레이어가 해당 캐릭터 조종권한 얻었을때 컨트롤러
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override; //캐릭터 상태가 변경됐을때 호출됨
 public: //스킬 관련 함수
+
+	void InitializeAttribute();
+	void AddStartupEffects();
 
 	//스킬 어빌리티 하나 초기화
 	UFUNCTION(BlueprintCallable, Category = "GASGamePlayAbilitySkill")

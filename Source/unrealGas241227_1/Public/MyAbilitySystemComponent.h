@@ -13,5 +13,9 @@ UCLASS()
 class UNREALGAS241227_1_API UMyAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+
+public:
+	//초기 이팩트 적용 한번만 했는지 체크하려고 만든 변수
+	bool StartUpEffectApplied = false;
 	
 };
