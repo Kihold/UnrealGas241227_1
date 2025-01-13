@@ -147,6 +147,14 @@ public: //캐릭터 속성 관련 기능 추가
 		UFUNCTION(BlueprintCallable, Category = "GASGamePlayAbility")
 		float GetMaxHealth() const;
 
+
+public:
+	void Die();
+
+	//죽음 어빌리티
+	UFUNCTION(BlueprintImplementableEvent, Category = "GASGamePlayAbility")
+	void FinishDying();
+
 protected:
 
 	/** Called for movement input */

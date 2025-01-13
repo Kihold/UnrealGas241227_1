@@ -207,9 +207,9 @@ void AunrealGas241227_1Character::AddStartupEffects()
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	EffectContext.AddSourceObject(this);// 어떤 놈에게 적용할지
 
-	for (TSubclassOf<class UGameplyEffect> GameplayEffect : StartUpEffects)
+	for (TSubclassOf<class UGameplayEffect> GameplayEffect : StartUpEffects)
 	{
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 0, EffectContext);
+			FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 0, EffectContext);
 		if (NewHandle.IsValid())
 		{
 			AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
@@ -284,6 +284,7 @@ void AunrealGas241227_1Character::OnHealthChangeNative(float Health, int32 Stack
 	if (Health <= 0)
 	{
 		//죽음.
+		Die();
 	}
 
 }
@@ -307,6 +308,33 @@ float AunrealGas241227_1Character::GetHealth() const
 float AunrealGas241227_1Character::GetMaxHealth() const
 {
 	return 1000.f; //임시, 나중에 추가해야됨.
+}
+
+void AunrealGas241227_1Character::Die()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->GravityScale = 0;
+	GetCharacterMovement()->Velocity = FVector(0);
+
+	if (IsValid(AbilitySystemComponent))
+	{
+		//실행중인 어빌리티 다 취소
+		AbilitySystemComponent->CancelAbilities();
+
+		//Die 태그를 캐릭터에 붙힌다.
+		FGameplayTag DieEffectTag = FGameplayTag::RequestGameplayTag(FName("Die"));
+
+		FGameplayTagContainer gameplayTag{ DieEffectTag };
+		
+		//Die태그인 어빌리티가 있으면 실행
+		bool IsSuccess = AbilitySystemComponent->TryActivateAbilitiesByTag(gameplayTag);
+		if (IsSuccess == false) //안붙어있으면 태그만 넣어줌
+		{
+			AbilitySystemComponent->AddLooseGameplayTag(DieEffectTag);
+			FinishDying();
+		}
+
+	}
 }
 
 
