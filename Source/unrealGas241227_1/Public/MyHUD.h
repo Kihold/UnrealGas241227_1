@@ -26,7 +26,7 @@ protected:
 
 public:
 	void CreateHUD();
-	class UHUDWidget* GetHUD();
+	class UUHUDWidget* GetHUD();
 	void SpawnPlayerStateSetting(AunrealGas241227_1Character* player);
 
 

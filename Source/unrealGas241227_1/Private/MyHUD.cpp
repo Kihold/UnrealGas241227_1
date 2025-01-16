@@ -18,11 +18,11 @@ void AMyHUD::CreateHUD()
 	}
 
 	//위젯 만들어서
-	UIHUDWidget = CreateWidget<UHUDWidget>(this, UIHudWidgetClass);
+	UIHUDWidget = CreateWidget<UUHUDWidget>(GetWorld(), UIHudWidgetClass);
 	UIHUDWidget->AddToViewport();//뷰포트에 넣어서 화면 출력
 }
 
-UHUDWidget* AMyHUD::GetHUD()
+UUHUDWidget* AMyHUD::GetHUD()
 {
 	return UIHUDWidget;
 }
