@@ -16,7 +16,7 @@ void AAMyPlayerController::OnPossess(APawn* aPawn)
 		AMyHUD* myhud =Cast<AMyHUD>(hud);
 		if (IsValid(myhud))
 		{
-			if (!IsLocalController())
+			if (IsLocalController())
 			myhud->CreateHUD();
 			myhud->SpawnPlayerStateSetting(Cast<AunrealGas241227_1Character>(aPawn));
 		}
