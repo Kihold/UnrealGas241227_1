@@ -39,7 +39,4 @@ public:
 	//델리게이트랑 세트, 이거 있어야 값 변경시 호출 가능
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
-
-
-
 };

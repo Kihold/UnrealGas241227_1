@@ -177,44 +177,52 @@ void AunrealGas241227_1Character::OnRep_PlayerState()
 
 void AunrealGas241227_1Character::InitializeAttribute()
 {
-	if (IsValid(AbilitySystemComponent))
+	if (!IsValid(AbilitySystemComponent))
 		return;
-	if (IsValid(DefaultAttributes))
+	if (!IsValid(DefaultAttributes))
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s()Missing DefaultAttributes."), *FString(__FUNCTION__));// 호출한 함수 이름으로 에러 메시지 출력
+		UE_LOG(LogTemp, Error, TEXT("%s()Missing DefaultAttributes."),
+			*FString(__FUNCTION__));//호출한 함수 이름으로에러 메시지 출력
+
 		return;
 	}
 
-	//이펙트 행들 생성
+	//이펙트 핸들 생성
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);// 어떤 놈에게 적용할지
+	EffectContext.AddSourceObject(this);//어떤 놈에게 적용할지
 
-	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 0, EffectContext);
+	FGameplayEffectSpecHandle NewHandle = 
+		AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributes, 0, EffectContext);
 
 	if (NewHandle.IsValid())
 	{
-		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+		AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
+			*NewHandle.Data.Get(), AbilitySystemComponent);
 	}
-
 }
 
 void AunrealGas241227_1Character::AddStartupEffects()
 {
-	if (IsValid(AbilitySystemComponent) || GetLocalRole() != ROLE_Authority || AbilitySystemComponent->StartUpEffectApplied)
+	if (!IsValid(AbilitySystemComponent) ||
+		GetLocalRole() != ROLE_Authority ||
+		AbilitySystemComponent->StartUpEffectApplied)
 		return;
-	
-	//이펙트 행들 생성
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);// 어떤 놈에게 적용할지
 
-	for (TSubclassOf<class UGameplayEffect> GameplayEffect : StartUpEffects)
-	{
-			FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 0, EffectContext);
-		if (NewHandle.IsValid())
+	//이펙트 핸들 생성
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);//어떤 놈에게 적용할지
+	
+		for (TSubclassOf<class UGameplayEffect> GameplayEffect : StartUpEffects)
 		{
-			AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), AbilitySystemComponent);
+			FGameplayEffectSpecHandle NewHandle =
+				AbilitySystemComponent->MakeOutgoingSpec(GameplayEffect, 0, EffectContext);
+			if (NewHandle.IsValid())
+			{
+				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
+					*NewHandle.Data.Get(), AbilitySystemComponent);
+			}
+				
 		}
-	}
 	AbilitySystemComponent->StartUpEffectApplied = true;
 }
 
@@ -320,21 +328,21 @@ void AunrealGas241227_1Character::Die()
 	{
 		//실행중인 어빌리티 다 취소
 		AbilitySystemComponent->CancelAbilities();
-
-		//Die 태그를 캐릭터에 붙힌다.
+		
+		//Die태그를 캐릭터에 붙힌다.
 		FGameplayTag DieEffectTag = FGameplayTag::RequestGameplayTag(FName("Die"));
 
 		FGameplayTagContainer gameplayTag{ DieEffectTag };
 		
-		//Die태그인 어빌리티가 있으면 실행
+		//Die 태그인 어빌리티가 있으면 그거 실행
 		bool IsSuccess = AbilitySystemComponent->TryActivateAbilitiesByTag(gameplayTag);
-		if (IsSuccess == false) //안붙어있으면 태그만 넣어줌
+		if (IsSuccess == false) //그게 없으면 우리가 태그만 넣어줌
 		{
 			AbilitySystemComponent->AddLooseGameplayTag(DieEffectTag);
 			FinishDying();
 		}
-
 	}
+
 }
 
 

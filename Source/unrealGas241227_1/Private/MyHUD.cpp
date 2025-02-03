@@ -2,7 +2,7 @@
 
 
 #include "MyHUD.h"
-#include "UHUDWidget.h"
+#include "HUDWidget.h"
 #include "unrealGas241227_1/unrealGas241227_1Character.h"
 
 void AMyHUD::CreateHUD()
@@ -11,18 +11,19 @@ void AMyHUD::CreateHUD()
 		return;
 
 	//에디터에서 넣은 원본 클래스 무조건 있어야됨
-	if(UIHudWidgetClass == nullptr)
+	if (UIHudWidgetClass == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s()Missing UIHudWidgetClass."), *FString(__FUNCTION__)); //호출한 함수 이름으로 에러 메시지 출력
+		UE_LOG(LogTemp, Error, TEXT("%s()Missing UIHudWidgetClass."),
+			*FString(__FUNCTION__));//호출한 함수 이름으로에러 메시지 출력
 		return;
 	}
 
 	//위젯 만들어서
-	UIHUDWidget = CreateWidget<UUHUDWidget>(GetWorld(), UIHudWidgetClass);
-	UIHUDWidget->AddToViewport();//뷰포트에 넣어서 화면 출력
+	UIHUDWidget = CreateWidget<UHUDWidget>(GetWorld(), UIHudWidgetClass);
+	UIHUDWidget->AddToViewport(); //뷰포트에 넣어서 화면 출력
 }
 
-UUHUDWidget* AMyHUD::GetHUD()
+UHUDWidget* AMyHUD::GetHUD()
 {
 	return UIHUDWidget;
 }
